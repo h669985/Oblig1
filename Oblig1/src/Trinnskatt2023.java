@@ -33,28 +33,41 @@ public class Trinnskatt2023 {
 		int brutto = inntektInput();
 
 		// Forhåndsdeklarering
+		boolean svar = false;
 		double skatt;
 		String skattMelding;
 
-		// Finner ut hvilket skattetrinn brukeren er på
-		if (brutto <= 198349) {
-			skatt = brutto * (0.0 / 100);
-		} else if (brutto <= 279149) {
-			skatt = brutto * (1.7 / 100);
-		} else if (brutto <= 642949) {
-			skatt = brutto * (4.0 / 100);
-		} else if (brutto <= 926799) {
-			// Sjekker om brukeren er bosatt i Troms og Finnmark
-			int svar = showConfirmDialog(null, "Er du bosatt i Troms og Finnmark?");
-			if (svar == 0) {
-				skatt = brutto * (11.5 / 100);
-			} else {
-				skatt = brutto * (13.5 / 100);
-			}
-		} else if (brutto <= 1499999) {
-			skatt = brutto * (16.5 / 100);
+		//Grenseverdier for trinnskatt
+		int g1 = 198350; int g2 = 279150; int g3 = 642950; int g4 = 926088; int g5 = 1500000;
+
+		// Sjekker om brukeren er bosatt i Troms og Finnmark
+		if (brutto > g3) {
+			int dialogResult = showConfirmDialog(null, "Er du bosatt i Troms og Finnmark?");
+			svar = (dialogResult == YES_OPTION);
+		}
+
+		// Forhånsberegninger: tx er trinnskatt i prosent og sx er hvor mye brukeren skal betale per trinn
+		double t1 = 1.7 / 100;  double s1 = t1*(brutto - g1);
+		double t2 = 4.0 / 100;  double s2 = t2*(brutto - g2);
+		double t4 = 16.5 / 100; double s4 = t4*(brutto - g4);
+		double t5 = 17.5 / 100; double s5 = t5*(brutto - g5);
+
+		// Bruker (var = bool? x : y) siden trinnskatten er forskjellig dersom brukeren bor i troms/finnmark
+		double t3 = svar? 11.5 / 100 : 13.5 / 100; double s3 = t3*(brutto - g3);
+
+		// Finner ut hvor mye brukeren skal betale i toppskatt
+		if (brutto < g1) {
+			skatt = 0;
+		} else if (brutto < g2) {
+			skatt = s1;
+		} else if (brutto < g3) {
+			skatt = s1 + s2;
+		} else if (brutto < g4) {
+			skatt = s1 + s2 + s3;
+		} else if (brutto < g5) {
+			skatt = s1 + s2 + s3 + s4;
 		} else {
-			skatt = brutto * (17.5 / 100);
+			skatt = s1 + s2 + s3 + s4 + s5;
 		}
 
 		// Formatterer output tallet til å være lett lesbart for brukeren
@@ -64,7 +77,6 @@ public class Trinnskatt2023 {
 
 		// Lager output meldingen
 		skattMelding = "I 2023 er trinnskatten din på: " + formatter.format(skatt) + "kr.";
-
 
 		// Skriver ut til brukeren
 		showMessageDialog(null, skattMelding);
