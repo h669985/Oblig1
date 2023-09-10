@@ -41,7 +41,7 @@ public class Trinnskatt2023 {
 		int g1 = 198350; int g2 = 279150; int g3 = 642950; int g4 = 926088; int g5 = 1500000;
 
 		// Sjekker om brukeren er bosatt i Troms og Finnmark
-		if (brutto > g3) {
+		if (brutto >= g3) {
 			int dialogResult = showConfirmDialog(null, "Er du bosatt i Troms og Finnmark?");
 			svar = (dialogResult == YES_OPTION);
 		}
